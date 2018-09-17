@@ -32,7 +32,12 @@ Vagrant.configure("2") do |config|
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
-  config.vm.network "private_network", ip: "5.5.5.5"
+  # config.vm.network "private_network", ip: "192.168.33.10"
+    config.vm.network "private_network", ip: "5.5.5.5"
+    config.vm.hostname = "serv1"
+    config.vm.network "forwarded_port", guest: 80, host: 80, host_ip: "127.0.0.1", id: '_http'
+    config.vm.network "forwarded_port", guest: 443, host: 443, host_ip: "127.0.0.1", id: 'apache_https'
+    config.vm.network "forwarded_port", guest: 22, host: 2200, host_ip: "127.0.0.1", id: 'ssh' 
 
   # Create a public network, which generally matched to bridged network.
   # Bridged networks make the machine appear as another physical device on
@@ -59,13 +64,12 @@ Vagrant.configure("2") do |config|
   #
   # View the documentation for the provider you are using for more
   # information on available options.
+    config.vm.provision "ansible" do |ansible| 
+         #ansible.verbose = "v"
+         ansible.playbook = "playbook.yml"
+       # ansible.compatibility_mode = "2.0"
 
-    config.ssh.forward_agent = true
-    config.vm.network "forwarded_port", guest: 80, host: 80, host_ip: "127.0.0.1", id: '_http'
-    config.vm.network "forwarded_port", guest: 443, host: 443, host_ip: "127.0.0.1", id: 'apache_https'
-    config.vm.network "forwarded_port", guest: 22, host: 22, host_ip: "127.0.0.1", id: 'ssh'
-    config.vm.synced_folder ".", "/var/www/"
-
+    end
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.

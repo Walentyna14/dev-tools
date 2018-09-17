@@ -1,0 +1,9 @@
+---
+- hosts: serv1
+  remote_user: vagrant
+  tasks:
+    - service:
+        name: nginx
+        state: stopped
+      become: yes
+      become_method: sudo
